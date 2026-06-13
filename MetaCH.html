@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MetaCH — AI Assistant by Kabi lash</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080d;--surface:#0d0f18;--surface2:#131622;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --accent:#00d4ff;--gold:#f0c040;--gold2:#c8971a;
+  --text:#e8eeff;--muted:#5a6080;--muted2:#8090b0;
+  --user-bg:#0a1a2e;--ai-bg:#0d0f18;
+}
+html,body{height:100%}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;animation:gd 20s linear infinite}
+@keyframes gd{from{background-position:0 0}to{background-position:40px 40px}}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(80px)}
+.orb1{width:500px;height:500px;top:-200px;left:-100px;background:radial-gradient(circle,rgba(0,212,255,0.12),transparent 70%)}
+.orb2{width:400px;height:400px;bottom:-150px;right:-100px;background:radial-gradient(circle,rgba(240,192,64,0.07),transparent 70%)}
+header{display:flex;align-items:center;gap:14px;padding:14px 24px;border-bottom:1px solid var(--border);background:rgba(7,8,13,0.92);backdrop-filter:blur(16px);position:relative;z-index:100;flex-shrink:0}
+.logo-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#001a2e,#002d4a);border:1px solid rgba(0,212,255,0.28);display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(0,212,255,0.18),inset 0 0 12px rgba(0,212,255,0.05);flex-shrink:0}
+.logo-icon svg{width:22px;height:22px}
+.brand{display:flex;flex-direction:column;gap:1px}
+.brand-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;line-height:1;background:linear-gradient(90deg,#e8eeff,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.brand-sub{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);line-height:1}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.status-badge{display:flex;align-items:center;gap:6px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted2);background:var(--surface);border:1px solid var(--border2);padding:5px 10px;border-radius:20px;letter-spacing:0.5px}
+.blink{width:6px;height:6px;border-radius:50%;background:#00ff88;box-shadow:0 0 8px #00ff88;animation:blk 2s ease-in-out infinite}
+@keyframes blk{0%,100%{opacity:1}50%{opacity:0.3}}
+.ver-tag{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--gold2);background:rgba(240,192,64,0.08);border:1px solid rgba(240,192,64,0.2);padding:4px 8px;border-radius:4px;letter-spacing:0.5px}
+#messages{flex:1;overflow-y:auto;padding:28px 24px;display:flex;flex-direction:column;gap:18px;position:relative;z-index:1;scroll-behavior:smooth}
+#messages::-webkit-scrollbar{width:3px}
+#messages::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.15);border-radius:4px}
+#empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:40px 24px;animation:rise .7s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.empty-logo{width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,#001a2e,#003a5a);border:1px solid rgba(0,212,255,0.22);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(0,212,255,0.13),0 0 80px rgba(0,212,255,0.04);margin-bottom:4px;animation:flt 4s ease-in-out infinite}
+@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.empty-logo svg{width:38px;height:38px}
+#empty-state h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;background:linear-gradient(90deg,#e8eeff 30%,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+#empty-state p{font-size:14px;color:var(--muted2);max-width:300px;line-height:1.7}
+.chips-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;width:100%;max-width:440px}
+.chip{padding:11px 14px;border-radius:10px;border:1px solid var(--border2);font-size:12.5px;cursor:pointer;background:var(--surface);color:var(--text);text-align:left;line-height:1.45;transition:all 0.15s;font-family:'Outfit',sans-serif;position:relative;overflow:hidden}
+.chip:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,212,255,0.1)}
+.chip-icon{font-size:16px;display:block;margin-bottom:5px}
+.msg{display:flex;gap:12px;animation:msgIn .22s ease forwards;max-width:860px;align-self:flex-start;width:100%}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{align-self:flex-end;flex-direction:row-reverse;max-width:72%}
+.msg-avatar{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;margin-top:2px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px}
+.ai .msg-avatar{background:linear-gradient(135deg,#001a30,#002d4a);border:1px solid rgba(0,212,255,0.25);color:var(--accent);box-shadow:0 0 12px rgba(0,212,255,0.1)}
+.user .msg-avatar{background:linear-gradient(135deg,#0a1020,#0f1830);border:1px solid rgba(240,192,64,0.2);color:var(--gold)}
+.bubble{padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.7;color:var(--text);max-width:100%;word-break:break-word;white-space:pre-wrap}
+.ai .bubble{background:var(--ai-bg);border:1px solid var(--border);border-left:2px solid rgba(0,212,255,0.18);border-radius:4px 14px 14px 14px}
+.user .bubble{background:var(--user-bg);border:1px solid rgba(0,212,255,0.12);border-radius:14px 4px 14px 14px;color:#c8deff}
+.typing-dots{display:flex;gap:5px;align-items:center;padding:5px 0}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:tdot 1.2s ease-in-out infinite;opacity:0.5}
+.typing-dots span:nth-child(2){animation-delay:.2s}.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:0.4}30%{transform:translateY(-5px);opacity:1}}
+#input-wrapper{padding:14px 24px 18px;position:relative;z-index:10;background:rgba(7,8,13,0.94);backdrop-filter:blur(16px);border-top:1px solid var(--border);flex-shrink:0}
+#input-box{display:flex;align-items:flex-end;gap:10px;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:10px 10px 10px 16px;transition:border-color .2s,box-shadow .2s}
+#input-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,0.08),0 0 20px rgba(0,212,255,0.05)}
+textarea{flex:1;resize:none;background:transparent;border:none;outline:none;font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);line-height:1.5;max-height:120px;min-height:22px}
+textarea::placeholder{color:var(--muted)}
+#send-btn{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#005577,#0099cc);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;box-shadow:0 4px 16px rgba(0,153,204,0.3)}
+#send-btn:hover{box-shadow:0 6px 24px rgba(0,212,255,0.4);transform:translateY(-1px)}
+#send-btn:active{transform:scale(0.93)}
+#send-btn:disabled{opacity:0.3;cursor:not-allowed;box-shadow:none;transform:none}
+#send-btn svg{width:16px;height:16px;fill:white}
+.footer-credits{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:10px;flex-wrap:wrap}
+.credit-by{font-size:11px;color:var(--muted);letter-spacing:0.3px}
+.credit-name{font-size:11px;font-weight:600;color:var(--gold);letter-spacing:0.3px}
+.credit-sep{font-size:10px;color:var(--border2)}
+.credit-powered{font-size:10px;color:var(--muted);letter-spacing:0.3px}
+.credit-brand{font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;background:linear-gradient(90deg,var(--accent),#0088bb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:0.5px}
+@media(max-width:520px){
+  #messages{padding:16px}
+  #input-wrapper{padding:12px 16px 14px}
+  .chips-grid{grid-template-columns:1fr}
+  .msg.user{max-width:90%}
+  header{padding:12px 16px}
+  .ver-tag{display:none}
+}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<header>
+  <div class="logo-icon">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2L20.5 7V17L12 22L3.5 17V7L12 2Z" stroke="#00d4ff" stroke-width="1.2" fill="rgba(0,212,255,0.06)"/>
+      <circle cx="12" cy="12" r="2.5" fill="#00d4ff" opacity="0.9"/>
+      <line x1="12" y1="2" x2="12" y2="9.5" stroke="#00d4ff" stroke-width="0.8" opacity="0.4"/>
+      <line x1="12" y1="14.5" x2="12" y2="22" stroke="#00d4ff" stroke-width="0.8" opacity="0.4"/>
+      <line x1="3.5" y1="7" x2="9.8" y2="10.75" stroke="#00d4ff" stroke-width="0.8" opacity="0.4"/>
+      <line x1="14.2" y1="13.25" x2="20.5" y2="17" stroke="#00d4ff" stroke-width="0.8" opacity="0.4"/>
+      <line x1="20.5" y1="7" x2="14.2" y2="10.75" stroke="#00d4ff" stroke-width="0.8" opacity="0.4"/>
+      <line x1="9.8" y1="13.25" x2="3.5" y2="17" stroke="#00d4ff" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+  </div>
+  <div class="brand">
+    <div class="brand-name">MetaCH</div>
+    <div class="brand-sub">AI Assistant</div>
+  </div>
+  <div class="header-right">
+    <div class="ver-tag">v2.0</div>
+    <div class="status-badge"><div class="blink"></div>LIVE</div>
+  </div>
+</header>
+
+<div id="messages">
+  <div id="empty-state">
+    <div class="empty-logo">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L20.5 7V17L12 22L3.5 17V7L12 2Z" stroke="#00d4ff" stroke-width="1" fill="rgba(0,212,255,0.06)"/>
+        <circle cx="12" cy="12" r="3" fill="#00d4ff" opacity="0.85"/>
+        <line x1="12" y1="2" x2="12" y2="9" stroke="#00d4ff" stroke-width="0.8" opacity="0.5"/>
+        <line x1="12" y1="15" x2="12" y2="22" stroke="#00d4ff" stroke-width="0.8" opacity="0.5"/>
+        <line x1="3.5" y1="7" x2="9.5" y2="10.5" stroke="#00d4ff" stroke-width="0.8" opacity="0.5"/>
+        <line x1="14.5" y1="13.5" x2="20.5" y2="17" stroke="#00d4ff" stroke-width="0.8" opacity="0.5"/>
+        <line x1="20.5" y1="7" x2="14.5" y2="10.5" stroke="#00d4ff" stroke-width="0.8" opacity="0.5"/>
+        <line x1="9.5" y1="13.5" x2="3.5" y2="17" stroke="#00d4ff" stroke-width="0.8" opacity="0.5"/>
+      </svg>
+    </div>
+    <h2>Welcome to MetaCH</h2>
+    <p>Your next-generation AI companion. Ask anything — powered by advanced intelligence.</p>
+    <div class="chips-grid">
+      <button class="chip" onclick="useChip(this)"><span class="chip-icon">🧠</span>Explain quantum computing</button>
+      <button class="chip" onclick="useChip(this)"><span class="chip-icon">✍️</span>Write a short poem for me</button>
+      <button class="chip" onclick="useChip(this)"><span class="chip-icon">💡</span>Give me a startup idea</button>
+      <button class="chip" onclick="useChip(this)"><span class="chip-icon">🌍</span>Tell me a wild fact</button>
+    </div>
+  </div>
+</div>
+
+<div id="input-wrapper">
+  <div id="input-box">
+    <textarea id="user-input" placeholder="Message MetaCH…" rows="1"></textarea>
+    <button id="send-btn" onclick="sendMessage()" title="Send" disabled>
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+  <div class="footer-credits">
+    <span class="credit-by">Created by</span>
+    <span class="credit-name">Kabi lash</span>
+    <span class="credit-sep">·</span>
+    <span class="credit-powered">Powered by</span>
+    <span class="credit-brand">NextGen authority</span>
+  </div>
+</div>
+
+<script>
+const messagesEl=document.getElementById('messages');
+const inputEl=document.getElementById('user-input');
+const sendBtn=document.getElementById('send-btn');
+const emptyState=document.getElementById('empty-state');
+let history=[];
+let loading=false;
+
+inputEl.addEventListener('input',()=>{
+  inputEl.style.height='auto';
+  inputEl.style.height=Math.min(inputEl.scrollHeight,120)+'px';
+  sendBtn.disabled=!inputEl.value.trim();
+});
+inputEl.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}
+});
+
+function useChip(el){
+  const ico=el.querySelector('.chip-icon');
+  inputEl.value=ico?el.innerText.slice(ico.innerText.length).trim():el.textContent.trim();
+  inputEl.dispatchEvent(new Event('input'));
+  sendMessage();
+}
+
+function clearEmpty(){
+  if(emptyState&&emptyState.parentNode)emptyState.remove();
+}
+
+function addMsg(role,text){
+  clearEmpty();
+  const d=document.createElement('div');
+  d.className='msg '+role;
+  const av=role==='ai'?'MC':'KL';
+  d.innerHTML='<div class="msg-avatar">'+av+'</div><div class="bubble"></div>';
+  d.querySelector('.bubble').textContent=text;
+  messagesEl.appendChild(d);
+  messagesEl.scrollTop=messagesEl.scrollHeight;
+}
+
+function showTyping(){
+  clearEmpty();
+  const d=document.createElement('div');
+  d.className='msg ai';d.id='typing';
+  d.innerHTML='<div class="msg-avatar">MC</div><div class="bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
+  messagesEl.appendChild(d);
+  messagesEl.scrollTop=messagesEl.scrollHeight;
+}
+
+function removeTyping(){
+  const t=document.getElementById('typing');
+  if(t)t.remove();
+}
+
+async function sendMessage(){
+  const text=inputEl.value.trim();
+  if(!text||loading)return;
+  loading=true;sendBtn.disabled=true;
+  inputEl.value='';inputEl.style.height='auto';
+  addMsg('user',text);
+  history.push({role:'user',content:text});
+  showTyping();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:'You are MetaCH, a brilliant and friendly AI assistant created by Kabi lash and powered by NextGen authority. Be helpful, sharp and concise. Keep responses well-structured — 2 to 5 sentences unless more depth is needed.',
+        messages:history
+      })
+    });
+    const data=await res.json();
+    removeTyping();
+    const reply=data.content&&data.content[0]?data.content[0].text:'Sorry, I had trouble responding. Please try again.';
+    addMsg('ai',reply);
+    history.push({role:'assistant',content:reply});
+  }catch(err){
+    removeTyping();
+    addMsg('ai','Connection error. Please check your internet and try again.');
+  }
+  loading=false;
+  sendBtn.disabled=!inputEl.value.trim();
+  inputEl.focus();
+}
+</script>
+</body>
+</html>
